@@ -30,7 +30,7 @@ import static fpt.com.universitymanagement.common.Constant.INSTRUCTOR_CONTROLLER
 
 @RestController
 @RequestMapping(INSTRUCTOR_CONTROLLER)
-public class InstructorController {
+public  InstructorController {
 
     @Autowired
     private InstructorService instructorService;
