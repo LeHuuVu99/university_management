@@ -1,34 +1,33 @@
 pipeline {
     agent any
+
     stages {
-        stage('git repo & clean') {
+        stage('Pull code') {
             steps {
-                script {
-                    sh "rm -rf university_management"
-                    sh "git clone https://github.com/LeHuuVu99/university_management.git"
-                    sh "mvn clean -f university_management/pom.xml"
-                }
+                // Pull code from source control repository
+                git branch: 'main', url: 'https://github.com/LeHuuVu99/university_management.git'
             }
         }
-        stage('install') {
+        stage('Compile and Clean') {
             steps {
-                script {
-                    sh "mvn install -f university_management/pom.xml"
-                }
+                // Run Maven on any agent.
+                sh "mvn clean compile"
             }
         }
-        stage('test') {
+        stage('deploy') {
             steps {
-                script {
-                    sh "mvn test -f university_management/pom.xml"
-                }
+                sh "mvn package"
             }
         }
-        stage('package') {
+        stage('Push code') {
             steps {
-                script {
-                    sh "mvn package -f university_management/pom.xml"
-                }
+                // Push code to source control repository
+                gitPush(branch: 'main')
+            }
+        }
+        stage('Archiving') {
+            steps {
+                archiveArtifacts '**/target/*.jar'
             }
         }
     }
