@@ -1,53 +1,34 @@
 pipeline {
     agent any
-    tools {
-        maven "3.8.5"
-
-    }
     stages {
-        stage('Compile and Clean') {
+        stage('git repo & clean') {
             steps {
-                // Run Maven on a Unix agent.
-
-                sh "mvn clean compile"
-            }
-        }
-        stage('deploy') {
-
-            steps {
-                sh "mvn package"
-            }
-        }
-        stage('Build Docker image'){
-
-            steps {
-                echo "Hello Java Express"
-                sh 'ls'
-                sh 'docker build -t  anvbhaskar/docker_jenkins_springboot:${BUILD_NUMBER} .'
-            }
-        }
-        stage('Docker Login'){
-
-            steps {
-                 withCredentials([string(credentialsId: 'DockerId', variable: 'Dockerpwd')]) {
-                    sh "docker login -u anvbhaskar -p ${Dockerpwd}"
+                script {
+                    sh "rm -rf university_management"
+                    sh "git clone https://github.com/LeHuuVu99/university_management.git"
+                    sh "mvn clean -f university_management/pom.xml"
                 }
             }
         }
-        stage('Docker Push'){
+        stage('install') {
             steps {
-                sh 'docker push anvbhaskar/docker_jenkins_springboot:${BUILD_NUMBER}'
+                script {
+                    sh "mvn install -f university_management/pom.xml"
+                }
             }
         }
-        stage('Docker deploy'){
+        stage('test') {
             steps {
-
-                sh 'docker run -itd -p  8081:8080 anvbhaskar/docker_jenkins_springboot:${BUILD_NUMBER}'
+                script {
+                    sh "mvn test -f university_management/pom.xml"
+                }
             }
         }
-        stage('Archving') {
+        stage('package') {
             steps {
-                 archiveArtifacts '**/target/*.jar'
+                script {
+                    sh "mvn package -f university_management/pom.xml"
+                }
             }
         }
     }
