@@ -1,7 +1,7 @@
 pipeline {
     agent any
-        tools {
-        maven "Maven" 
+    tools {
+        maven "Maven"
     }
 
     stages {
@@ -17,19 +17,21 @@ pipeline {
                 sh "mvn clean compile"
             }
         }
-        stage('deploy') {
+        stage('Deploy') {
             steps {
+                // Run Maven package command
                 sh "mvn package"
             }
         }
         stage('Push code') {
             steps {
                 // Push code to source control repository
-                gitPush(branch: 'main')
+                git push branch: 'main'
             }
         }
         stage('Archiving') {
             steps {
+                // Archive built artifacts
                 archiveArtifacts '**/target/*.jar'
             }
         }
