@@ -26,7 +26,7 @@ pipeline {
         stage('Push code') {
             steps {
                 // Push code to source control repository
-                git push branch: 'main'
+                sh "git push origin main"
             }
         }
         stage('Archiving') {
